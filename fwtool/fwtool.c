@@ -20,7 +20,8 @@
 
 enum fw_target {
 	FW_TARGET_UNKNOWN = 0,
-	FW_TARGET_IT930X
+	FW_TARGET_IT930X,
+	FW_TARGET_IT917X
 };
 
 struct fwinfo {
@@ -51,7 +52,8 @@ static struct {
 	char str[16];
 	enum fw_target target;
 } target_list[] = {
-	{ "it930x", FW_TARGET_IT930X }
+	{ "it930x", FW_TARGET_IT930X },
+	{ "it917x", FW_TARGET_IT917X }
 };
 
 #define NAME_NUM	(sizeof(name) / sizeof(name[0]))
@@ -292,7 +294,7 @@ static int output_firmware(struct fwinfo *fi, const uint8_t *buf, unsigned long 
 
 static void usage()
 {
-	fprintf(stderr, "usage: fwtool <driver binary> <output>\n");
+	fprintf(stderr, "usage: fwtool [-t target] <driver binary> <output>\n");
 }
 
 int main(int argc, char *argv[])
@@ -342,6 +344,8 @@ int main(int argc, char *argv[])
 		target = FW_TARGET_IT930X;
 	else if (!out && target == FW_TARGET_IT930X)
 		out = "it930x-firmware.bin";
+	else if (!out && target == FW_TARGET_IT917X)
+		out = "it917x-firmware.bin";
 
 	if (!out || target == FW_TARGET_UNKNOWN) {
 		usage();
