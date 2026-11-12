@@ -63,6 +63,7 @@ static const struct {
 	{ 0x0854, "{28ec1517-6150-4025-acfb-a5447add0a57}" },
 	{ 0x0855, "{a3303a3b-ea2c-467f-beae-8e72fb158714}" },
 	{ 0x0052, "{ac1e5fa2-e265-4819-9b29-2be8a44ce4c9}" },
+	{ 0x024d, "{c4ba358e-5b74-4e38-9b12-430ac7d6898b}" },
 };
 
 static struct class *px4_card_class;

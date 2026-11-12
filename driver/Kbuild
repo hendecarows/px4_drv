@@ -10,6 +10,7 @@ ISDB6014_4TS_USB_MAX_DEVICE := 0
 PXM1UR_USB_MAX_DEVICE := 0
 PXS1UR_USB_MAX_DEVICE := 0
 ISDBT2071_USB_MAX_DEVICE := 0
+ISDBT6013_USB_MAX_DEVICE := 0
 PSB_DEBUG := 0
 ITEDTV_BUS_USE_WORKQUEUE := 0
 
@@ -43,6 +44,9 @@ endif
 ifneq ($(ISDBT2071_USB_MAX_DEVICE),0)
 ccflags-y += -DISDBT2071_USB_MAX_DEVICE=$(ISDBT2071_USB_MAX_DEVICE)
 endif
+ifneq ($(ISDBT6013_USB_MAX_DEVICE),0)
+ccflags-y += -DISDBT6013_USB_MAX_DEVICE=$(ISDBT6013_USB_MAX_DEVICE)
+endif
 ifneq ($(PSB_DEBUG),0)
 ccflags-y += -DPSB_DEBUG
 endif
@@ -51,4 +55,4 @@ ccflags-y += -DITEDTV_BUS_USE_WORKQUEUE
 endif
 
 obj-m := px4_drv.o
-px4_drv-y := driver_module.o ptx_chrdev.o px4_usb.o px4_usb_params.o px4_device.o px4_device_params.o px4_mldev.o pxmlt_device.o isdb2056_device.o it930x.o itedtv_bus.o tc90522.o r850.o rt710.o cxd2856er.o cxd2858er.o ringbuffer.o isdbt2071_device.o px4_card.o tsmf.o
+px4_drv-y := driver_module.o ptx_chrdev.o px4_usb.o px4_usb_params.o px4_device.o px4_device_params.o px4_mldev.o pxmlt_device.o isdb2056_device.o it930x.o itedtv_bus.o tc90522.o r850.o rt710.o cxd2856er.o cxd2858er.o ringbuffer.o isdbt2071_device.o it917x.o isdbt6013_device.o px4_card.o tsmf.o

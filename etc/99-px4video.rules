@@ -6,6 +6,7 @@ KERNEL=="isdb6014video*", GROUP="video", MODE="0664"
 KERNEL=="pxm1urvideo*", GROUP="video", MODE="0664"
 KERNEL=="pxs1urvideo*", GROUP="video", MODE="0664"
 KERNEL=="isdbt2071video*", GROUP="video", MODE="0664"
+KERNEL=="isdbt6013video*", GROUP="video", MODE="0664"
 
 # デバイスファイルを開く pcscd が専用ユーザーで動く環境でも利用できるよう、pcscd グループに読み書きを許可する
 # pcscd グループがない古い環境では udev がグループ指定を無視し、root で動く pcscd が root:root のファイルを開く

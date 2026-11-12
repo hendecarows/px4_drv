@@ -27,6 +27,7 @@
 #include "pxmlt_device.h"
 #include "isdb2056_device.h"
 #include "isdbt2071_device.h"
+#include "isdbt6013_device.h"
 
 /*
  * fallthrough は Linux 5.4 で追加されたため、それより古いカーネルでは 5.4 と同じ定義を置く
@@ -83,6 +84,10 @@
 #endif
 #define ISDBT2071_USB_MAX_CHRDEV	(ISDBT2071_USB_MAX_DEVICE * ISDBT2071_CHRDEV_NUM)
 
+#ifndef ISDBT6013_USB_MAX_DEVICE
+#define ISDBT6013_USB_MAX_DEVICE	14
+#endif
+#define ISDBT6013_USB_MAX_CHRDEV	(ISDBT6013_USB_MAX_DEVICE * ISDBT6013_CHRDEV_NUM)
 
 struct px4_usb_context {
 	enum px4_usb_device_type type;
@@ -94,6 +99,7 @@ struct px4_usb_context {
 		struct pxmlt_device pxmlt;
 		struct isdb2056_device isdb2056;
 		struct isdbt2071_device isdbt2071;
+		struct isdbt6013_device isdbt6013;
 	} ctx;
 };
 
@@ -316,6 +322,19 @@ static int px4_usb_probe(struct usb_interface *intf,
 						&ctx->quit_completion);
 			break;
 
+		case USB_PID_DIGIBEST_ISDBT6013:
+			ret = px4_usb_init_bridge(dev, usb_dev,
+						&ctx->ctx.isdbt6013.it930x);
+			if (ret)
+				break;
+
+			ctx->type = ISDBT6013_USB_DEVICE;
+			ret = isdbt6013_device_init(&ctx->ctx.isdbt6013, dev,
+						ISDBT6013_MODEL,
+						px4_usb_chrdev_ctx[ISDBT6013_USB_DEVICE],
+						&ctx->quit_completion);
+			break;
+
 		default:
 			ret = -EINVAL;
 			break;
@@ -386,6 +405,11 @@ static void px4_usb_disconnect(struct usb_interface *intf)
 		wait_for_completion(&ctx->quit_completion);
 		break;
 
+	case ISDBT6013_USB_DEVICE:
+		isdbt6013_device_term(&ctx->ctx.isdbt6013);
+		wait_for_completion(&ctx->quit_completion);
+		break;
+
 	default:
 		/* unknown device */
 		break;
@@ -428,6 +452,7 @@ static const struct usb_device_id px4_usb_ids[] = {
 	{ USB_DEVICE(0x0511, USB_PID_PX_M1UR) },
 	{ USB_DEVICE(0x0511, USB_PID_PX_S1UR) },
 	{ USB_DEVICE(0x0511, USB_PID_DIGIBEST_ISDBT2071) },
+	{ USB_DEVICE(0x0511, USB_PID_DIGIBEST_ISDBT6013) },
 	{ 0 }
 };
 
@@ -454,6 +479,7 @@ int px4_usb_register(void)
 	pr_debug("px4_usb_register: PXM1UR_USB_MAX_DEVICE: %d\n", PXM1UR_USB_MAX_DEVICE);
 	pr_debug("px4_usb_register: PXS1UR_USB_MAX_DEVICE: %d\n", PXS1UR_USB_MAX_DEVICE);
 	pr_debug("px4_usb_register: ISDBT2071_USB_MAX_DEVICE: %d\n", ISDBT2071_USB_MAX_DEVICE);
+	pr_debug("px4_usb_register: ISDBT6013_USB_MAX_DEVICE: %d\n", ISDBT6013_USB_MAX_DEVICE);
 
 	memset(&px4_usb_chrdev_ctx, 0, sizeof(px4_usb_chrdev_ctx));
 
@@ -521,6 +547,12 @@ int px4_usb_register(void)
 		goto fail_isdbt2071;
 	}
 
+	ret = ptx_chrdev_context_create("isdbt6013", "isdbt6013video",
+					ISDBT6013_USB_MAX_CHRDEV,
+					&px4_usb_chrdev_ctx[ISDBT6013_USB_DEVICE]);
+	if (ret)
+		goto fail_isdbt6013;
+
 	ret = usb_register(&px4_usb_driver);
 	if (ret) {
 		pr_err("px4_usb_register: usb_register() failed.\n");
@@ -530,6 +562,9 @@ int px4_usb_register(void)
 	return 0;
 
 fail_usb:
+	ptx_chrdev_context_destroy(px4_usb_chrdev_ctx[ISDBT6013_USB_DEVICE]);
+
+fail_isdbt6013:
 	ptx_chrdev_context_destroy(px4_usb_chrdev_ctx[ISDBT2071_USB_DEVICE]);
 
 fail_isdbt2071:
@@ -560,6 +595,7 @@ fail:
 void px4_usb_unregister(void)
 {
 	usb_deregister(&px4_usb_driver);
+	ptx_chrdev_context_destroy(px4_usb_chrdev_ctx[ISDBT6013_USB_DEVICE]);
 	ptx_chrdev_context_destroy(px4_usb_chrdev_ctx[ISDBT2071_USB_DEVICE]);
 	ptx_chrdev_context_destroy(px4_usb_chrdev_ctx[PXS1UR_USB_DEVICE]);
 	ptx_chrdev_context_destroy(px4_usb_chrdev_ctx[PXM1UR_USB_DEVICE]);
