@@ -1,0 +1,44 @@
+;
+; Digibest ISDBT6013 WinUSB
+;
+[Version]
+Signature="$Windows NT$"
+Class=Media
+ClassGuid={4d36e96c-e325-11ce-bfc1-08002be10318}
+Provider=%AuthorName%
+DriverVer=05/01/2021,21.05.01.00
+CatalogFile=px4_drv_winusb.cat
+
+[Manufacturer]
+%AuthorName%=DTV025TP_WinUSB,ntx86,ntamd64,ntarm64
+
+[DTV025TP_WinUSB.ntx86]
+%DTV025TP_WinUSB.DeviceDesc%=DTV025TP_WinUSB.DeviceInstall,USB\VID_0511&PID_024D
+
+[DTV025TP_WinUSB.ntamd64]
+%DTV025TP_WinUSB.DeviceDesc%=DTV025TP_WinUSB.DeviceInstall,USB\VID_0511&PID_024D
+
+[DTV025TP_WinUSB.ntarm64]
+%DTV025TP_WinUSB.DeviceDesc%=DTV025TP_WinUSB.DeviceInstall,USB\VID_0511&PID_024D
+
+[DTV025TP_WinUSB.DeviceInstall]
+Include=winusb.inf
+Needs=WINUSB.NT
+AddProperty=DTV025TP_WinUSB.DeviceSetup.AddProperty
+
+[DTV025TP_WinUSB.DeviceInstall.Services]
+Include=winusb.inf
+Needs=WINUSB.NT.Services
+
+[DTV025TP_WinUSB.DeviceInstall.HW]
+AddReg=DTV025TP_WinUSB.DeviceSetup.AddReg
+
+[DTV025TP_WinUSB.DeviceSetup.AddReg]
+HKR,,DeviceInterfaceGUIDs,0x00010000,"{c4ba358e-5b74-4e38-9b12-430ac7d6898b}"
+
+[DTV025TP_WinUSB.DeviceSetup.AddProperty]
+{afd97640-86a3-4210-b67c-289c41aabe55},3,0x00000011,,0   ;DEVPKEY_Device_SafeRemovalRequiredOverride=FALSE
+
+[Strings]
+AuthorName="nns779"
+DTV025TP_WinUSB.DeviceDesc="Digibest ISDBT6013 ISDB-T Receiver Device (WinUSB)"
